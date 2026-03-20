@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -24,11 +23,6 @@ public class PlaylistSongsController implements PlaylistSongsApi {
     private final PlaylistService playlistService;
     private final PlaylistMapper playlistMapper;
     private final HttpServletRequest httpRequest;
-
-    @Override
-    public Optional<HttpServletRequest> getRequest() {
-        return Optional.of(httpRequest);
-    }
 
     private UUID currentUserId() {
         return UUID.fromString(httpRequest.getHeader("X-User-Id"));
