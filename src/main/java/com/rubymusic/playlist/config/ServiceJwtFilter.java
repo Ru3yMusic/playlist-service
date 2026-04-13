@@ -9,19 +9,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.security.PublicKey;
 
 /**
- * Validates Bearer service JWTs on all /api/v1/playlists/internal/** endpoints.
- * Rejects requests without a valid token signed by the auth-service RSA key
- * and carrying role=SERVICE.
+ * Legacy filter — superseded by {@link JwtAuthenticationFilter} + {@link SecurityConfig}.
+ *
+ * <p>Kept for reference but NOT registered as a Spring bean (@Component removed).
+ * The new security chain (Spring Security + JwtAuthenticationFilter) handles all
+ * authentication and authorization, including internal endpoints.
+ *
+ * @deprecated Use {@link SecurityConfig} authorization rules instead.
  */
 @Slf4j
-@Component
 @RequiredArgsConstructor
 public class ServiceJwtFilter extends OncePerRequestFilter {
 

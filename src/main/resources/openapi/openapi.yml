@@ -172,6 +172,33 @@ paths:
         '204':
           description: Songs reordered
 
+  # ── Internal service-to-service endpoints (ROLE_SERVICE required) ────────────
+
+  /api/internal/v1/playlists/system/songs:
+    post:
+      tags: [Internal]
+      operationId: addSongToSystemPlaylistInternal
+      summary: Add a song to the user's "Tus me gusta" system playlist
+      description: |
+        Called by interaction-service when a user likes a song.
+        Creates the system playlist if it does not exist yet (idempotent).
+        Requires a SERVICE JWT (ROLE_SERVICE).
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SystemSongRequest'
+      responses:
+        '200':
+          description: Song added to system playlist (or already present)
+        '401':
+          description: Missing or invalid JWT
+        '403':
+          description: Insufficient role (USER token used on SERVICE endpoint)
+
 # ── Components ────────────────────────────────────────────────────────────────
 
 components:
@@ -278,6 +305,19 @@ components:
         addedAt:
           type: string
           format: date-time
+
+    SystemSongRequest:
+      type: object
+      required: [userId, songId]
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user whose system playlist will be updated
+        songId:
+          type: string
+          format: uuid
+          description: ID of the song to add
 
     ErrorResponse:
       type: object
