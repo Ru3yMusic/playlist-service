@@ -12,7 +12,7 @@ public interface PlaylistService {
     Playlist create(UUID userId, String name, String description, boolean isPublic);
 
     /**
-     * Auto-created on user registration — "Tus me gusta".
+     * Auto-createds on user registration — "Tus me gusta".
      * Called by an internal event or by the auth-service via REST.
      */
     Playlist createSystemPlaylist(UUID userId);
