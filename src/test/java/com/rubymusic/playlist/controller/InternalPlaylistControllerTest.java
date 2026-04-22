@@ -5,6 +5,8 @@ import com.rubymusic.playlist.config.JwtAuthenticationFilter;
 import com.rubymusic.playlist.config.JwtTokenProvider;
 import com.rubymusic.playlist.config.SecurityConfig;
 import com.rubymusic.playlist.model.Playlist;
+import com.rubymusic.playlist.repository.PlaylistRepository;
+import com.rubymusic.playlist.repository.PlaylistSongRepository;
 import com.rubymusic.playlist.service.PlaylistService;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,6 +88,12 @@ class InternalPlaylistControllerTest {
 
     @MockBean
     private PlaylistService playlistService;
+
+    @MockBean
+    private PlaylistRepository playlistRepository;
+
+    @MockBean
+    private PlaylistSongRepository playlistSongRepository;
 
     private String serviceToken;
     private String userToken;
