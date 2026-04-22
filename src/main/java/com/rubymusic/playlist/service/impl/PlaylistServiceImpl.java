@@ -59,7 +59,11 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
+    @Transactional
     public List<Playlist> findByUserId(UUID userId) {
+        // Asegura que exista la system playlist "Tus me gusta" para este usuario
+        // antes de listar. Idempotente — si ya existe, no crea duplicados.
+        createSystemPlaylist(userId);
         return playlistRepository.findAllByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(userId);
     }
 
@@ -112,8 +116,12 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Transactional
     public void removeSong(UUID playlistId, UUID requestingUserId, UUID songId) {
         findAndVerifyOwner(playlistId, requestingUserId);
-        playlistSongRepository.findByPlaylistIdAndSongId(playlistId, songId)
-                .ifPresent(playlistSongRepository::delete);
+        // Use the explicit @Modifying DELETE so the row is guaranteed to leave
+        // the DB even when the parent Playlist's `songs` collection is
+        // already in the persistence context (orphanRemoval reconciliation
+        // could otherwise silently skip the delete).
+        int removed = playlistSongRepository.deleteByPlaylistIdAndSongId(playlistId, songId);
+        log.debug("removeSong playlist={} song={} rowsDeleted={}", playlistId, songId, removed);
     }
 
     @Override

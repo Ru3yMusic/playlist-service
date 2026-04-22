@@ -1,6 +1,8 @@
 package com.rubymusic.playlist.controller;
 
 import com.rubymusic.playlist.dto.SystemSongRequest;
+import com.rubymusic.playlist.repository.PlaylistRepository;
+import com.rubymusic.playlist.repository.PlaylistSongRepository;
 import com.rubymusic.playlist.service.PlaylistService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,8 @@ import java.util.UUID;
 public class InternalPlaylistController {
 
     private final PlaylistService playlistService;
+    private final PlaylistRepository playlistRepository;
+    private final PlaylistSongRepository playlistSongRepository;
 
     // ── System playlist lifecycle ─────────────────────────────────────────────
 
@@ -63,8 +67,8 @@ public class InternalPlaylistController {
     @Transactional
     public ResponseEntity<Void> removeSongFromSystemPlaylist(@PathVariable UUID userId,
                                                              @PathVariable UUID songId) {
-        var systemPlaylist = playlistService.createSystemPlaylist(userId);
-        playlistService.removeSong(systemPlaylist.getId(), userId, songId);
+        int deleted = playlistSongRepository.deleteFromUserSystemPlaylistsBySong(userId, songId);
+        log.info("removeSongFromSystemPlaylist user={} song={} deletedRows={}", userId, songId, deleted);
         return ResponseEntity.noContent().build();
     }
 
