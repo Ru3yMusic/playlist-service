@@ -26,4 +26,11 @@ public interface PlaylistRepository extends JpaRepository<Playlist, UUID> {
 
     /** Returns the "Tus me gusta" system playlist for the user */
     Optional<Playlist> findByUserIdAndIsSystemTrueAndDeletedAtIsNull(UUID userId);
+
+    /** Returns all active system playlists for the user.
+     *  Usado por el handler interno de remove-song para cubrir el caso de
+     *  duplicados legacy: la canción puede estar en una system playlist distinta
+     *  de la que devuelve `findByUserIdAndIsSystemTrueAndDeletedAtIsNull`, y hay
+     *  que eliminarla de todas las activas del usuario. */
+    List<Playlist> findAllByUserIdAndIsSystemTrueAndDeletedAtIsNull(UUID userId);
 }
