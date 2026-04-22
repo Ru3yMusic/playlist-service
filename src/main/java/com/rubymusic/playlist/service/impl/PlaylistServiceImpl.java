@@ -7,6 +7,7 @@ import com.rubymusic.playlist.repository.PlaylistSongRepository;
 import com.rubymusic.playlist.service.PlaylistService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     private final PlaylistRepository playlistRepository;
     private final PlaylistSongRepository playlistSongRepository;
+    private final @Lazy PlaylistService playlistServiceProxy;
 
     @Override
     @Transactional
@@ -63,7 +65,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     public List<Playlist> findByUserId(UUID userId) {
         // Asegura que exista la system playlist "Tus me gusta" para este usuario
         // antes de listar. Idempotente — si ya existe, no crea duplicados.
-        createSystemPlaylist(userId);
+        playlistServiceProxy.createSystemPlaylist(userId);
         return playlistRepository.findAllByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(userId);
     }
 
