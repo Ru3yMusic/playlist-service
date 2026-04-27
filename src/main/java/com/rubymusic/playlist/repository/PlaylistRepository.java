@@ -1,6 +1,8 @@
 package com.rubymusic.playlist.repository;
 
 import com.rubymusic.playlist.model.Playlist;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -18,6 +20,23 @@ public interface PlaylistRepository extends JpaRepository<Playlist, UUID> {
      *  (spring.jpa.open-in-view = false). */
     @EntityGraph(attributePaths = {"songs"})
     List<Playlist> findAllByUserIdAndDeletedAtIsNullOrderByCreatedAtDesc(UUID userId);
+
+    /**
+     * Public playlists from any user (excludes system "Tus me gusta" and soft-deleted),
+     * newest first. Powers the "Playlist Recomendadas" section in /user/music.
+     * Songs eagerly loaded for songCount computation in the mapper.
+     */
+    @EntityGraph(attributePaths = {"songs"})
+    Page<Playlist> findAllByIsPublicTrueAndIsSystemFalseAndDeletedAtIsNullOrderByCreatedAtDesc(Pageable pageable);
+
+    /**
+     * Loads playlists by ID with songs eager-fetched, filtered to those still
+     * publicly visible. The SERVICE re-orders the result by the input ID order
+     * (since SQL IN does not preserve order). Used by step 2 of saved-playlists
+     * resolution — see PlaylistSavedByUserRepository.findSavedPlaylistIdsOrdered.
+     */
+    @EntityGraph(attributePaths = {"songs"})
+    List<Playlist> findAllByIdInAndIsPublicTrueAndIsSystemFalseAndDeletedAtIsNull(List<UUID> ids);
 
     /** Same rationale: songs must be loaded within this query so the mapper
      *  can read the collection without an open session. */
