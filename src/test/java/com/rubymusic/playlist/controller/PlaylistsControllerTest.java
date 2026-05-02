@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -71,7 +70,7 @@ class PlaylistsControllerTest {
     @Test
     void createPlaylist_validBody_returns201() throws Exception {
         Playlist saved = mock(Playlist.class);
-        when(playlistService.create(eq(USER), eq("My List"), eq("Some desc"), eq(true)))
+        when(playlistService.create(USER, "My List", "Some desc", true))
                 .thenReturn(saved);
         when(playlistMapper.toDto(saved)).thenReturn(new PlaylistResponse());
 
